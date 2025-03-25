@@ -1,0 +1,60 @@
+﻿@page "/"
+@attribute [StreamRendering]
+@using BlazorRazden.App.Data
+@using BlazorRazden.App.Models
+@inject IndexService indexService
+
+<PageTitle>Index</PageTitle>
+
+<h1>Weekly Index</h1>
+
+@if (index == null)
+{
+    <p><em>Fetching Index data...</em></p>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Trading Date</th>
+                <th>Index (All stocks)</th>
+            </tr>
+        </thead>
+        <tbody>
+            @if (index is not null)
+            {
+                @foreach (var ixitem in index)
+                {
+                    <tr>
+                        <td>@ixitem.DateCreated.ToShortDateString()</td>
+                        <td>@ixitem.Description</td>
+                    </tr>
+                }
+            }
+        </tbody>
+    </table>
+
+    <div class="rz-p-0 rz-p-md-12">
+        <RadzenChart>
+            <RadzenLineSeries Data="@index" CategoryProperty="IndexDate" Title="Daily Index" LineType="LineType.Solid" ValueProperty="IndexValue">
+                <RadzenMarkers Visible="true" MarkerType="MarkerType.Triangle" />
+            </RadzenLineSeries>
+            <RadzenCategoryAxis Padding="20" />
+        </RadzenChart>
+    </div> 
+}
+
+
+@code {
+
+    private IndexModel[]? index;
+
+    protected override async Task OnInitializedAsync()
+    {
+        // simulation..
+        await Task.Delay(1000);
+        index = await indexService.GetToDoItemAsync(DateTime.Now);
+
+    }
+}
