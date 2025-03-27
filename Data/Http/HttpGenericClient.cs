@@ -7,7 +7,14 @@ namespace BlazorRazden.App.Data.Http
 {
     internal class HttpGenericClient<T>
     {
-        // GET Bitcoin price from CoinLore API, Use model CoinModel as generic type
+        /// <summary>
+        /// HTTP GET data of model type T
+        /// </summary>
+        /// <param name="requestUri">GetAsync's requestUri</param>
+        /// <param name="hostHeader">Host header</param>
+        /// <param name="contentsParams">Parameters of type application/json</param>
+        /// <param name="token">Authorization header token, Note: string 'Bearer ' added in the front.</param>
+        /// <returns>Data of model type T or default(T)</returns>
         public async Task<T?> GetAsync(string requestUri, string hostHeader, Dictionary<string, string>? contentsParams = null, string token = "")
         {
             try
@@ -30,19 +37,11 @@ namespace BlazorRazden.App.Data.Http
                     HttpResponseMessage response = await client.GetAsync(requestUri);
                     if (response.IsSuccessStatusCode && response.Content is object)
                     {
-                        try
-                        {
-                            var contentStream = await response.Content.ReadAsStreamAsync();
-                            if(contentStream is not null)
-                                return await System.Text.Json.JsonSerializer.DeserializeAsync<T>(contentStream);
-                            else
-                                return default(T);
-                        }
-                        catch (Exception ex2)
-                        {
-                            Console.WriteLine(ex2.Message);
+                        var contentStream = await response.Content.ReadAsStreamAsync();
+                        if(contentStream is not null)
+                            return await System.Text.Json.JsonSerializer.DeserializeAsync<T>(contentStream);
+                        else
                             return default(T);
-                        }
                     }
                     else
                     {
