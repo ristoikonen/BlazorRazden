@@ -7,8 +7,8 @@ namespace BlazorRazden.App.Data
 {
     public class IndexService
     {
-        // simulate HTTP GET from API
-        public Task<IndexModel[]> GetToDoItemAsync(DateTime startDate)
+        // simulate data fetch from a service
+        public Task<IndexModel[]> GetIndexAsync(DateTime startDate)
         {
             return Task.FromResult(Enumerable.Range(1, 5).Select(index => new IndexModel
             {

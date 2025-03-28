@@ -5,8 +5,9 @@
 @using BlazorRazden.App.Models
 @using BlazorRazden.App.Properties
 @inject IndexService indexService
+@inject IHttpClientFactory _httpClientFactory
 
-<PageTitle>Index</PageTitle>
+<PageTitle>Bitcoin and Index</PageTitle>
 
 <p class="h2">Today's Bitcoin Price and Weekly Index</p>
 
@@ -18,37 +19,37 @@
         }
     </div>
 </div>
-    
+
 <div class="rz-p-0 rz-p-md-12" mt-4>
-        @if (index == null)
-        {
-            <p><em>Fetching Index data...</em></p>
-        }
-        else
-        {
-            <table class="table">
-                <thead>
-                    <tr>
-                        <th>Trading Date</th>
-                        <th>Index (All stocks)</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @if (index is not null)
+    @if (index == null)
+    {
+        <p><em>Fetching Index data...</em></p>
+    }
+    else
+    {
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Trading Date</th>
+                    <th>Index (All stocks)</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (index is not null)
+                {
+                    @foreach (var ixitem in index)
                     {
-                        @foreach (var ixitem in index)
-                        {
-                            <tr>
-                                <td>@ixitem.DateCreated.ToShortDateString()</td>
-                                <td>@ixitem.Description</td>
-                            </tr>
-                        }
+                        <tr>
+                            <td>@ixitem.DateCreated.ToShortDateString()</td>
+                            <td>@ixitem.Description</td>
+                        </tr>
                     }
-                </tbody>
-            </table>
-        }
+                }
+            </tbody>
+        </table>
+    }
 </div>
-        
+
 
 
 <div class="rz-p-0 rz-p-md-12">
@@ -68,17 +69,17 @@
 
     protected override async Task OnInitializedAsync()
     {
-        // Simulate API call
+        // Simulate API call with delay
         await Task.Delay(1000);
-        
-        index = await indexService.GetToDoItemAsync(DateTime.Now);
+        index = await indexService.GetIndexAsync(DateTime.Now);
 
-        // Get Bitcoin USD price from CoinBase API using generic HTTPClient
-        HttpGenericClient<CoinModel[]> client = new HttpGenericClient<CoinModel[]>();
+        // Get Bitcoin USD price from CoinBase API using injected HTTP client
+        var _httpClient = _httpClientFactory.CreateClient("HttpGenericClient");
+        HttpGenericClient<CoinModel[]> client = new HttpGenericClient<CoinModel[]>(_httpClient);
         try
         {
             var coinarray = await client.GetAsync(Endpoints.CoinLoreBitcoinTicker, Endpoints.CoinLoreHost);
-            if(coinarray is not null && coinarray is CoinModel[])
+            if (coinarray is not null && coinarray is CoinModel[] && coinarray.Length > 0 )
             {
                 var coin = coinarray[0];
                 bitCoinPrice = coin.Price_usd ?? "No Ticker Price Avaiable Today";

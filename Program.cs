@@ -1,6 +1,7 @@
 using Radzen;
 using BlazorRazden.Components;
 using BlazorRazden.App.Data;
+using System.Runtime;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -8,7 +9,9 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
-
+builder.Services.AddHttpClient("HttpGenericClient", client => {
+    client.Timeout = TimeSpan.FromMinutes(1);
+});
 builder.Services.AddRadzenComponents();
 builder.Services.AddRadzenQueryStringThemeService();
 builder.Services.AddSingleton<IndexService>();

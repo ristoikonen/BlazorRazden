@@ -5,8 +5,9 @@ using System.Text;
 
 namespace BlazorRazden.App.Data.Http
 {
-    internal class HttpGenericClient<T>
+    internal class HttpGenericClient<T>(HttpClient _httpClient)
     {
+
         /// <summary>
         /// HTTP GET data of model type T
         /// </summary>
@@ -19,7 +20,7 @@ namespace BlazorRazden.App.Data.Http
         {
             try
             {
-                using (var client = new HttpClient())
+                using (var client = _httpClient)
                 {
                     client.DefaultRequestHeaders.Accept.Clear();
                     client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("*/*"));
