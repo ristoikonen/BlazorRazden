@@ -2,7 +2,7 @@
 title: Blazor Razden charts, HTTP client and dependency injection demo
 author: Risto
 ---
-# Razden charts and dependency injection demo
+# Razden charts, HTTP client and dependency injection demo
 
 Uses Radzen version 6.3.x charting library for Blazor
 
